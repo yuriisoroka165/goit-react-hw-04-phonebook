@@ -5,35 +5,30 @@ import ContactList from "./ContactList/ContactList";
 import css from "./App.module.css";
 
 export default function App() {
-    const [contacts, setContacts] = useState([]);
+    //лінива ініціалізація стану contacts
+    const [contacts, setContacts] = useState(() => {
+        return JSON.parse(localStorage.getItem("contacts")) ?? [];
+    });
     const [filter, setFilter] = useState("");
 
     useEffect(() => {
-        try {
-            const contacts = localStorage.getItem("contacts");
-            const parsedContacts = JSON.parse(contacts);
-            if (parsedContacts) {
-                setContacts([...contacts]);
-            }
-        } catch (error) {
-            console.log(error.message);
+        // не створювати запс якщо масив порожній
+        if (contacts.length > 0) {
+            localStorage.setItem("contacts", JSON.stringify(contacts));
         }
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem("contacts", JSON.stringify(contacts));
     }, [contacts]);
 
     const deleteContact = contactId => {
-        setContacts(prevState => {
-            prevState.contacts.filter(contact => contact.id !== contactId);
-        });
+        setContacts(prevContacts => [
+            ...prevContacts.filter(contact => contact.id !== contactId),
+        ]);
     };
 
+    // в даній функції знаки питання після значень перевіряють чи існує таке значення передвикликом toLowerCase()
     const newContactAudit = newContact => {
         return contacts.filter(
             contact =>
-                (contact.name.toLowerCase() === newContact.name.toLowerCase())
+                contact.name?.toLowerCase() === newContact.name?.toLowerCase()
         );
     };
 
@@ -42,9 +37,7 @@ export default function App() {
             alert(`${newContact.name} is already in contacts.`);
             return false;
         } else {
-            setContacts(prevState => ({
-                contacts: [...prevState.contacts, newContact],
-            }));
+            setContacts(prevContacts => [...prevContacts, newContact]);
             return true;
         }
     };
@@ -53,12 +46,11 @@ export default function App() {
         setFilter(event.target.value);
     };
 
-    // const filterValueLowerCase = filter.toLowerCase();
+    const filterValueLowerCase = filter?.toLowerCase();
 
-    const visibleContacts = contacts.filter(contact =>
-        contact.name
-    );
-    console.log(visibleContacts);
+    const visibleContacts = contacts.filter(contact => {
+        return contact.name?.toLowerCase().includes(filterValueLowerCase);
+    });
 
     return (
         <div className={css.app__container}>
