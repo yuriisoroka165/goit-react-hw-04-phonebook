@@ -12,9 +12,9 @@ export default function App() {
     const [filter, setFilter] = useState("");
 
     useEffect(() => {
-        // не створювати запс якщо масив порожній
-        if (contacts.length > 0) {
-            localStorage.setItem("contacts", JSON.stringify(contacts));
+        localStorage.setItem("contacts", JSON.stringify(contacts));
+        if (contacts.length === 0) {
+            localStorage.removeItem("contacts");
         }
     }, [contacts]);
 
