@@ -24,7 +24,7 @@ export default function App() {
         ]);
     };
 
-    // в даній функції знаки питання після значень перевіряють чи існує таке значення передвикликом toLowerCase()
+    // в даній функції знаки питання після значень перевіряють чи існує таке значення перед викликом toLowerCase()
     const newContactAudit = newContact => {
         return contacts.filter(
             contact =>
